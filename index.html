@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+<link rel="s" href="js.js">
+</head>
+<body>
+  
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      padding: 40px;
+      background: linear-gradient(135deg, #b3e5fc, #81d4fa);
+      color: #333;
+    }
+    input {
+      padding: 10px;
+      width: 250px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      margin-right: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      border: none;
+      background-color: #0288d1;
+      color: white;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #output {
+      margin-top: 30px;
+      font-size: 18px;
+      background: #e1f5fe;
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+      min-width: 300px;
+    }
+  </style>
+  <h2>🔍 Smart Search Simulation</h2>
+  <input type="text" id="searchBox" placeholder="Type to search...">
+  <div id="results"></div>
+
+<h2>🌦 Weather Checker App</h2>
+  <input type="text" id="cityInput" placeholder="Enter city name">
+  <button id="checkBtn">Check Weather</button>
+  <div id="output"></div>
+
+<!-- 
+    <form id="form">
+        <input type="text" id="username" placeholder="enter user name">
+        <input type="text" id="email" placeholder="enter email">
+        <button type="submit">submit</button>
+    </form>
+    <button onclick="getdata()">get</button>
+    <p id="userdata"></p> -->
+
+<!-- <h1>User Profile Manager</h1>
+
+  <button id="addUserBtn">Add New User</button>
+  <button id="showUsersBtn">Show Users</button>
+  <button id="clearUsersBtn">Clear Users</button>
+
+  <div id="userList">
+    <h3>User List:</h3>
+    <ul id="userContainer"></ul>
+  </div> -->
+        <script>
+
+          try{
+            let x = "55" - "2"; 
+            console.log("result: " + x);
+
+           
+          } catch (err){
+            console.log("an errorccurred: " + err.message);
+          }
+           
+
+// ---------- Simulated Database ----------
+// const fakeDatabase = [
+//   "apple", "apricot", "banana", "blueberry", "blackberry",
+//   "cherry", "date", "dragonfruit", "fig", "grape", "guava",
+//   "kiwi", "lemon", "lime", "mango", "orange", "papaya", "pear", "pineapple"
+// ];
+
+// // ---------- Promise: Simulate Fetching ----------
+// function fetchResults(query) {
+//   return new Promise((resolve, reject) => {
+//     console.log("[Fetching] Searching for:", query);
+//     setTimeout(() => {
+//       if (!query) {
+//         reject("Empty query!");
+//       } else {
+//         const results = fakeDatabase.filter(item =>
+//           item.toLowerCase().includes(query.toLowerCase())
+//         );
+//         resolve(results);
+//       }
+//     }, 1000); // simulate 1s delay
+//   });
+// }
+
+// // ---------- Promise Chaining ----------
+// function processResults(query) {
+//   fetchResults(query)
+//     .then(results => results.map(r => r.toUpperCase()))        // step 1: transform
+//     .then(uppercased => uppercased.sort())                     // step 2: sort
+//     .then(sorted => {
+//       displayResults(sorted);
+//       logger("INFO")(`Results fetched for "${query}"`);
+//     })
+//     .catch(err => logger("ERROR")(err));
+// }
+
+// // ---------- Debounce (for search input) ----------
+// function debounce(fn, delay) {
+//   let timer;
+//   return function(...args) {
+//     clearTimeout(timer);
+//     timer = setTimeout(() => fn.apply(this, args), delay);
+//   };
+// }
+
+// ---------- Throttle (for keystroke logging) ----------
+// function throttle(fn, limit) {
+//   let lastCall = 0;
+//   return function(...args) {
+//     const now = Date.now();
+//     if (now - lastCall >= limit) {
+//       lastCall = now;
+//       fn.apply(this, args);
+//     }
+//   };
+// }
+
+// ---------- Function Currying (for logger) ----------
+// const logger = type => message => console.log(`[${type}] - ${message}`);
+
+// // ---------- Display Results ----------
+// function displayResults(items) {
+//   const resultBox = document.getElementById("results");
+//   if (items.length === 0) {
+//     resultBox.innerHTML = `<p>No results found</p>`;
+//   } else {
+//     resultBox.innerHTML = `<ul>${items.map(i => `<li>${i}</li>`).join('')}</ul>`;
+//   }
+// }
+
+// // ---------- Main Logic ----------
+// const searchBox = document.getElementById("searchBox");
+
+// const debouncedSearch = debounce((e) => processResults(e.target.value), 600);
+// const throttledLog = throttle((e) => logger("KEY")(e.target.value), 1000);
+
+// searchBox.addEventListener("input", (e) => {
+//   debouncedSearch(e);
+//   throttledLog(e);
+// });
+
+
+
+//🌦
+
+const API_KEY = "demo"; // Replace with your real OpenWeatherMap key
+const output = document.getElementById("output");
+const button = document.getElementById("checkBtn");
+const input = document.getElementById("cityInput");
+
+button.addEventListener("click", getWeather);
+
+async function getWeather() {
+  const city = input.value.trim();
+  if (!city) {
+    displayError("❌ You must enter a city name!");
+    return;
+  }
+
+  const url = `https://api.openweathermap.org/data/2.5/weather?q={cit}&appid={API key}${city}&appid=YOUR_API_KEY&units=metric`;
+
+  try {
+    const response = await fetch(url); // GET request
+    if (!response.ok) throw new Error("Network response not OK");
+    const data = await response.json();
+
+    // Optional chaining for safe access
+    const temperature = data?.main?.temp;
+    const description = data?.weather?.[0]?.description;
+
+    // Simulate incomplete data for demonstration
+    if (!temperature || !description) {
+      throw new TypeError("Weather data is incomplete!");
+    }
+
+    displayWeather(temperature, description);
+
+  } catch (err) {
+    handleError(err);
+  }
+}
+
+// ✅ Display Weather
+function displayWeather(temp, desc) {
+  output.innerHTML = `🌡 Temperature: ${temp}°C <br> 🌥 Description: ${desc}`;
+}
+
+// ❌ Display Error
+function displayError(msg) {
+  output.innerHTML = `<span style="color:red;">${msg}</span>`;
+}
+
+// ⚡ Handle Different Error Types
+function handleError(err) {
+  if (err instanceof ReferenceError) {
+    console.error("ReferenceError occurred:", err.message);
+    displayError("❌ Reference Error in code logic!");
+  } else if (err instanceof SyntaxError) {
+    console.error("SyntaxError occurred:", err.message);
+    displayError("❌ Syntax Error in JSON or code!");
+  } else if (err instanceof TypeError) {
+    console.error("TypeError occurred:", err.message);
+    displayError("❌ Weather data is incomplete!");
+  } else {
+    console.error("Unknown or API Error:", err.message);
+    displayError("❌ Failed to fetch weather data!");
+  }
+}
+
+// 🧪 Example: Simulate different errors manually in console
+// Uncomment one at a time to test error handling
+// throw new ReferenceError("This is a simulated ReferenceError");
+// throw new SyntaxError("This is a simulated SyntaxError");
+// throw new TypeError("This is a simulated TypeError");
+
+
+
+          // console.log(Math.floor(Math.random()*10)+1);
+          // console.log(math.random())
+          // for  (var i = 0 ; i <3; i++){
+          //   setTimeout(function() {
+          //     console.log(i);
+
+          //   }, 1000);
+          // }
+
+
+
+    // // =========================================
+    // // 1️⃣ Variables & Array to Store Users
+    // // =========================================
+    // let users = [];
+    // let nextId = 1; // Unique ID for users
+
+    // // =========================================
+    // // 2️⃣ DOM Elements
+    // // =========================================
+    // const addUserBtn = document.getElementById("addUserBtn");
+    // const showUsersBtn = document.getElementById("showUsersBtn");
+    // const clearUsersBtn = document.getElementById("clearUsersBtn");
+    // const userContainer = document.getElementById("userContainer");
+
+    // // =========================================
+    // // 3️⃣ Event Listeners
+    // // =========================================
+
+    // // Add User Button
+    // addUserBtn.addEventListener("click", () => {
+    //   let name = prompt("Enter user name:");
+    //   let email = prompt("Enter user email:");
+
+    //   // Check for cancel or empty input
+    //   if (!name || !email) {
+    //     window.alert("❌ Both name and email are required!");
+    //     return;
+    //   }
+
+    //   // Use String Methods
+    //   name = name.trim().toUpperCase();
+    //   email = email.trim().toLowerCase();
+
+    
+    //   const newUser = { id: nextId, name, email };
+
+    //   // Array method: push
+    //   users.push(newUser);
+    //   nextId++;
+
+    //   // BOM: alert and setTimeout
+    //   window.alert("✅ User added successfully!");
+    //   setTimeout(() => console.log("User data saved to array!"), 500);
+
+    //   // Update DOM
+    //   displayUsers();
+    // });
+
+    // // Show Users Button
+    // showUsersBtn.addEventListener("click", () => {
+    //   if (users.length === 0) {
+    //     window.alert("⚠️ No users found!");
+    //     return;
+    //   }
+
+    //   // Array method: forEach / map
+    //   console.log("Users:", users.map(user => user));
+
+    //   window.alert("Check the console for user list!");
+    // });
+
+    // // Clear Users Button
+    // clearUsersBtn.addEventListener("click", () => {
+    //   users = []; // clear array
+    //   nextId = 1;
+
+    //   // BOM: alert
+    //   window.alert("🗑️ All users cleared!");
+
+    //   // Update DOM
+    //   displayUsers();
+    // });
+
+    // // =========================================
+    // // 4️⃣ Display Users (DOM Manipulation + Object Methods)
+    // // =========================================
+    // function displayUsers() {
+    //   userContainer.innerHTML = "";
+
+    //   users.forEach(user => {
+    //     const li = document.createElement("li");
+
+    //     // Object methods example
+    //     if (user.hasOwnProperty("name") && user.hasOwnProperty("email")) {
+    //       // Object.entries
+    //       let info = Object.entries(user)
+    //         .map(([key, value]) => `${key.toUpperCase()}: ${value}`)
+    //         .join(" | ");
+
+    //       li.innerText = info;
+    //     } else {
+    //       li.innerText = "Invalid user object!";
+    //     }
+
+    //     userContainer.appendChild(li);
+    //   });
+
+    //   if (users.length === 0) {
+    //     userContainer.innerHTML = "<li>No users available.</li>";
+    //   }
+    // }
+
+    // =========================================
+    // 5️⃣ Demonstrate BOM: Optional Redirect
+    // =========================================
+    // Uncomment below line to redirect after 10s
+    // setTimeout(() => window.location.reload(), 10000);
+  
+
+
+
+        // day 3 in task of javascript 
+        // function displayUsers(filteredUsers = null){
+        //     let users = filteredUsers || JSON.parse(localStorage.getItem("users")) || [];
+        //     let userList = document.getElementById("userList");
+        //     userList.innerHTML = "";
+        //     if(users.length === 0){
+        //         userList.innerHTML = "<p>No users found.</p>";
+        //         return;
+        //     }
+        //     users.forEach(user => {
+        //         let userDiv = document.createElement("div");
+        //         userDiv.className = "user-card";
+        //         userDiv.innerHTML = `<h3>${user.name}</h3><p>${user.email}</p>`;
+        //         userList.appendChild(userDiv);
+        //     });
+        // }
+
+        // document.getElementById("addBtn").addEventListener("click", function(){
+        //     let name = document.getElementById("nameInput").value;
+        //     let email = document.getElementById("emailInput").value;
+        //     if(name === "" || email === ""){
+        //         alert("please fill all the fields");
+        //         return;
+        //     }
+        //     let user = {
+        //         name: name,
+        //         email: email
+        //     };
+        //     let users = JSON.parse(localStorage.getItem("users")) || [];
+        //     users.push (user);
+        //     localStorage.setItem("users", JSON.stringify(users));
+        //     document.getElementById("nameInput").value = "";
+        //     document.getElementById("emailInput").value = "";
+        //     displayUsers();
+        // });
+        // document.getElementById("searchInput").addEventListener("input", function(){
+        //     let searchTerm = this.value.toLowerCase();
+        //     let users = JSON.parse(localStorage.getItem("users")) || [];
+        //     let filteredUsers = users.filter(user => user.name.toLowerCase().includes(searchTerm));
+        //     displayUsers(filteredUsers);
+        // });
+
+        // showusers();
+
+
+
+
+
+
+
+        // let secrenumber = "5";
+
+        // const game =()=>{
+        //     let userinput = prompt("guess the number between 1 to 10");
+        //     if(userinput === null){
+        //         alert ("game cancelled");
+        //         return;
+        //     }
+        //     userinput = Number (userinput);
+        //     if(isNaN(userinput) || userinput <1 || userinput >10){
+        //         alert("invalid input! please enter a number between 1 to 10");
+        //         game();
+        //     }
+        //     else if(userinput === 5){
+        //         alert("congratulations! you guessed the correct number");
+        //     }
+        //     else{
+        //         alert("too low");
+        //         game();
+        //     }
+        // };
+        // game();
+
+
+        // let secrenumber = 5;
+
+        // const game =()=>{
+        //     let userinput = prompt("guess the number between  1 to 10");
+        //     if(userinput === null){
+        //         alart("game is cancelled");
+        //         return;
+        //     }
+        //     userinput = number (userinput);
+
+        // }
+        // let secrenumber = Math.floor(Math.random() *10) +1;
+
+        // const playgame =()=>{
+        //     let userinput = prompt("guess the number between 1 to 10");
+        //     if(userinput === null){
+        //         alert("game cancelled");
+        //         return;
+        //     }
+        //     userinput = Number (userinput);
+        //     if(isNaN(userinput) || userinput <1 || userinput >10){
+        //         alert("invalid input! please enter a number between 1 to 10");
+        //         playgame();
+        //     }
+        //     else if(userinput === secrenumber){
+        //         alert("congratulations! you guessed the correct number");
+        //     }
+        //     else if(userinput < secrenumber){
+        //         alert("too low");
+        //         playgame();
+        //     }
+        //     else{
+        //         alert("too high");
+        //         playgame();
+        //     }
+        // };
+        // playgame();
+
+
+
+
+        // let project =100
+        // let tax = 18;
+        // let discount = 20;
+        // function calculatetotal(cart){
+        //     let subtotal =0;
+        //     for (let i =0; i<cart.length; i++){
+        //         subtotal += cart[i].itemtotal;
+        //     }
+        //     console.log(`subtotal: ₹${subtotal}`);
+
+        //     // apply discount using comparison & logical operators
+        //     let discount =0;
+        //     if(subtotal >100){
+        //         discount = 0.1 * subtotal;
+        //         console.log("discount applied: 10%");
+        //     }
+        //     else{
+        //         console.log("no discount available");
+        //     }
+                
+        // }
+        // const TAX_RATE = 0.18;
+        // let afterdiscount = subtotal - discount;
+        // let tax = afterdiscount * TAX_RATE;
+        // let total = afterdiscount + tax;
+        // console.log(`tax: ₹${tax.toFixed (2)}`);
+        // console.log(`total: ₹${total.toFixed (2)}`); 
+      
+       
+
+        // if(project >50){
+        //     if(tax >15){
+        //         project = project + (project*tax/100);
+        //     }
+        //     else{
+        //         project = project - (project*discount/100);
+        //     }
+        // }
+        // else{
+        //     project = project + 200;
+        // }
+        // console.log(project);
+
+
+        // 🛒 SHOPPING CART PROGRAM
+
+// ====== 1. VARIABLES & DATA TYPES ======
+// var storeName = "SuperMart"; // global variable (string)
+// const TAX_RATE = 0.08;       // constant (number)
+// let discountAvailable = true; // boolean
+// let cart = [];               // array
+ // object
+
+// ====== 2. GLOBAL SCOPE ======
+// 'storeName' and 'cart' are global variables accessible anywhere in the program
+
+
+// ====== FUNCTION SCOPE ======
+// function addToCart(itemName, price, quantity) {
+  // local scope variables
+//   let itemTotal = price * quantity; // arithmetic operator
+//   let item = { itemName, price, quantity, itemTotal };
+//   cart.push(item); // adding item to array
+
+  
+// }
+
+// ====== ADD ITEMS ======
+// addToCart("Apple", 30, 3);
+// addToCart("Milk", 45, 2);
+// addToCart("Bread", 25, 1);
+
+// ====== CALCULATE TOTAL COST ======
+// function calculateTotal() {
+//   let subtotal = 0;
+
+//   // Using a loop to add all item totals
+//   for (let i = 0; i < cart.length; i++) {
+//     subtotal += cart[i].itemTotal; // assignment operator +=
+//   }
+
+//   console.log(`Subtotal: ₹${subtotal}`);
+
+  // Apply discount using comparison & logical operators
+//   let discount = 0;
+//   if (discountAvailable && subtotal > 100) { // logical AND (&&)
+//     discount = 0.1 * subtotal; // 10% discount
+//     console.log("Discount Applied: 10%");
+//   } else {
+//     console.log("No discount available.");
+//   }
+
+//   // Calculate tax and final total
+//   let tax = subtotal * TAX_RATE;
+//   let total = subtotal - discount + tax;
+
+//   // ====== TERNARY OPERATOR ======
+//   let message = total > 100 ? "You spent quite a bit today!" : "Small shopping day!";
+//   console.log(message);
+// }
+
+// // ====== 3. JAVASCRIPT RUNTIME (setTimeout) ======
+// // Simulate delay like online payment processing
+
+// setTimeout(() => {
+//   calculateTotal();
+//   console.log("✅ Thank you for shopping with us!");
+// }, 2000); // runs after 2 seconds (asynchronous behavior)
+
+
+
+
+
+
+        // let form = document.getElementById("form");
+        // form.addEventListener("submit", function(e){
+        //     e.preventDefault();
+        //     let username = document.getElementById("username").value;
+        //     let email = document.getElementById("email").value;
+        //     if(username && email=== ""){
+        //         alert("please fill all the fields");
+            
+        // }
+        // else{
+        //     localStorage.setItem("username", username);
+        //     localStorage.setItem("email", email);
+        //     alert("data stored successfully");
+
+        // }
+        // });
+        // function getdata (){
+        //     let username = localStorage.getItem("username");
+        //     let email = localStorage.getItem("email");
+        //     document.getElementById("userdata").innerText = `username: ${username} , email: ${email}`;
+        // }
+
+        // function cuury(a){
+        //     return function(b){
+        //         return function(c){
+        //             return a+b+c;
+
+        //         }
+        //     }
+        // }
+        // console.log(cuury(1)(6)(5))
+
+        // let promise = new promise((resolve, reject)=>{
+        //     let suceess = true;
+        //     success ? resolve("the promise is resolved") : reject("the promise is rejected");
+        // });
+        // promise.then((res)=>{
+        //     console.log(res);
+        // }).catch((err)=>{
+        //     console.log(rej);
+        // });
+
+        // hello(goodbye);
+        
+        // function hello(){
+        //     setTimeout(function(){
+        //     console.log("hello");
+        //     }, 3000);
+        // }
+        // function goodbye(){
+        //     console.log("goodbye");
+        // }
+
+    </script>
+</body>
+</html>

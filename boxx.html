@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CSS Box Model</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .box-model {
+            width: 300px;
+            position: relative;
+        }
+
+        .content {
+            background-color: #A52A2A; /* Brown */
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            position: relative;
+            z-index: 3; /* Ensure content is on top */
+        }
+
+        .padding {
+            background-color: #90EE90; /* Light Green */
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            right: 10px;
+            bottom: 10px;
+            z-index: 2;
+        }
+
+        .border {
+            background-color: #FFA500; /* Orange */
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            z-index: 1;
+        }
+
+        .margin {
+            background-color: #D3D3D3; /* Light Gray */
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            right: 30px;
+            bottom: 30px;
+        }
+
+        .label {
+            position: absolute;
+            font-size: 14px;
+            color: black;
+            font-weight: bold;
+            pointer-events: none; /* Prevent clicks from affecting labels */
+        }
+
+        .content-label {
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .padding-label {
+            top: 5px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .border-label {
+            top: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .margin-label {
+            top: 25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="box-model">
+        <div class="margin">
+            <div class="label margin-label">margin</div>
+            <div class="border">
+                <div class="label border-label">border</div>
+                <div class="padding">
+                    <div class="label padding-label">padding</div>
+                    <div class="content">
+                        <div class="label content-label">content</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
